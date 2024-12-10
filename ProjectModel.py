@@ -16,7 +16,7 @@ def duplicate_upside_down(image, label):
     flipped_image = tf.image.flip_up_down(image)  
     return tf.concat([image[None], flipped_image[None]], axis=0), tf.concat([label[None], label[None]], axis=0)
 
-dataset_dir = "C:\\Users\\nick4\\Documents\\University\\Fall_2024\\Classes\\ENEL_525\\Project\\Code\\BMPDataset"
+dataset_dir = ".\\BMPDataset"
 image_size = (256, 256)
 batch_size = 100  # Number of images per batch
 validation_split = 0.2  # Fraction of data to reserve for validation/testing
@@ -26,7 +26,7 @@ ds_train = tf.keras.utils.image_dataset_from_directory(
     labels = 'inferred',  # Automatically infer labels from subdirectory names
     label_mode = 'int',  # Labels are integers
     image_size = image_size,
-    batch_size = batch_size*2,
+    batch_size = batch_size,
     shuffle = True,
     seed = 123,  # Ensure reproducibility
     validation_split = validation_split,  # Specify the validation split
@@ -45,7 +45,7 @@ ds_test = tf.keras.utils.image_dataset_from_directory(
     subset = "validation",  # This loads the validation/testing subset
 )
 
-ds_train = ds_train.flat_map(lambda images, labels: tf.data.Dataset.from_tensors(duplicate_upside_down(images, labels))).unbatch()
+# ds_train = ds_train.flat_map(lambda images, labels: tf.data.Dataset.from_tensors(duplicate_upside_down(images, labels))).unbatch()
 
 def normalize_img(image, label):
   """Normalizes images: `uint8` -> `float32`."""
@@ -74,11 +74,11 @@ model.add(MaxPooling2D(pool_size = (2, 2)))
 model.add(Flatten())
 # model.add(GlobalAveragePooling2D())
 model.add(Dense(128, activation = 'relu'))
-model.add(Dropout(0.2))  
+model.add(Dropout(0.3))  
 model.add(Dense(21, activation = 'softmax'))  
 
 model.compile(
-    optimizer = tf.keras.optimizers.Adam(0.001),
+    optimizer = tf.keras.optimizers.Adam(0.0005),
     loss = tf.keras.losses.SparseCategoricalCrossentropy(from_logits = False),
     metrics = [tf.keras.metrics.SparseCategoricalAccuracy()],
 )
