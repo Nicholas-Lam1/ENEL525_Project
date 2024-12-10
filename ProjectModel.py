@@ -65,6 +65,12 @@ model = Sequential()
 model.add(Conv2D(32, (3, 3), activation = 'relu', input_shape = (256, 256, 3)))
 model.add(MaxPooling2D(pool_size = (2, 2)))
     
+# model.add(Conv2D(48, (3, 3), activation = 'relu'))
+# model.add(MaxPooling2D(pool_size = (2, 2)))
+
+# model.add(Conv2D(96, (3, 3), activation = 'relu'))
+# model.add(MaxPooling2D(pool_size = (2, 2)))
+
 model.add(Conv2D(64, (3, 3), activation = 'relu'))
 model.add(MaxPooling2D(pool_size = (2, 2)))
 
@@ -74,7 +80,7 @@ model.add(MaxPooling2D(pool_size = (2, 2)))
 model.add(Flatten())
 # model.add(GlobalAveragePooling2D())
 model.add(Dense(128, activation = 'relu'))
-model.add(Dropout(0.3))  
+model.add(Dropout(0.1))  
 model.add(Dense(21, activation = 'softmax'))  
 
 model.compile(
