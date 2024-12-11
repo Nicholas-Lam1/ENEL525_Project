@@ -68,22 +68,16 @@ model.add(MaxPooling2D(pool_size = (2, 2)))
 model.add(Conv2D(48, (3, 3), activation = 'relu'))
 model.add(MaxPooling2D(pool_size = (2, 2)))
 
-# model.add(Conv2D(64, (3, 3), activation = 'relu'))
-# model.add(MaxPooling2D(pool_size = (2, 2)))
-
 model.add(Conv2D(96, (3, 3), activation = 'relu'))
-model.add(Dropout(0.1))
+model.add(Dropout(0.05))
 model.add(MaxPooling2D(pool_size = (2, 2)))
 
 model.add(Conv2D(128, (3, 3), activation = 'relu'))
-# model.add(Dropout(0.1))
-# model.add(PReLU())
 model.add(MaxPooling2D(pool_size = (2, 2)))
  
 model.add(Flatten())
-# model.add(GlobalAveragePooling2D())
 model.add(Dense(128, activation = 'relu'))
-model.add(Dropout(0.1))  
+model.add(Dropout(0.05))  
 model.add(Dense(21, activation = 'softmax'))  
 
 model.compile(
@@ -94,7 +88,7 @@ model.compile(
 
 history = model.fit(
     ds_train,
-    epochs = 25,
+    epochs = 20,
     validation_data = ds_test,
 )
 
