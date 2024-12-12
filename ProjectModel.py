@@ -62,6 +62,9 @@ ds_test = ds_test.prefetch(tf.data.AUTOTUNE)
 
 model = Sequential()
 
+# model.add(Conv2D(16, (3, 3), activation = 'relu', input_shape = (256, 256, 3)))
+# model.add(MaxPooling2D(pool_size = (2, 2)))
+
 model.add(Conv2D(32, (3, 3), activation = 'relu', input_shape = (256, 256, 3)))
 model.add(MaxPooling2D(pool_size = (2, 2)))
     
@@ -72,18 +75,18 @@ model.add(MaxPooling2D(pool_size = (2, 2)))
 # model.add(MaxPooling2D(pool_size = (2, 2)))
 
 model.add(Conv2D(96, (3, 3), activation = 'relu'))
-model.add(Dropout(0.1))
+model.add(Dropout(0.05))
 model.add(MaxPooling2D(pool_size = (2, 2)))
 
 model.add(Conv2D(128, (3, 3), activation = 'relu'))
-# model.add(Dropout(0.1))
+# model.add(Dropout(0.05))
 # model.add(PReLU())
 model.add(MaxPooling2D(pool_size = (2, 2)))
  
 model.add(Flatten())
 # model.add(GlobalAveragePooling2D())
 model.add(Dense(128, activation = 'relu'))
-model.add(Dropout(0.1))  
+model.add(Dropout(0.05))  
 model.add(Dense(21, activation = 'softmax'))  
 
 model.compile(
