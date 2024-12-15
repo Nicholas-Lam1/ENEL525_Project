@@ -34,7 +34,7 @@ ds_train = tf.keras.utils.image_dataset_from_directory(
     subset = "training",  # This loads the training subset
 )
 
-ds_test = tf.keras.utils.image_dataset_from_directory(
+ds_val = tf.keras.utils.image_dataset_from_directory(
     dataset_dir,
     labels = 'inferred',  # Automatically infer labels from subdirectory names
     label_mode = 'int',  # Labels are integers
@@ -45,6 +45,10 @@ ds_test = tf.keras.utils.image_dataset_from_directory(
     validation_split = validation_split,  # Specify the validation split
     subset = "validation",  # This loads the validation/testing subset
 )
+
+val_batches = tf.data.experimental.cardinality(ds_val)
+ds_val = ds_val.take((2*val_batches) // 3)
+ds_test = ds_val.skip((2*val_batches) // 3)
 
 # ds_train = ds_train.flat_map(lambda images, labels: tf.data.Dataset.from_tensors(duplicate_upside_down(images, labels))).unbatch()
 
@@ -57,9 +61,13 @@ ds_train = ds_train.cache()
 ds_train = ds_train.shuffle(1000)
 ds_train = ds_train.prefetch(tf.data.AUTOTUNE)
 
-ds_test = ds_test.map(normalize_img, num_parallel_calls=tf.data.AUTOTUNE)
-ds_test = ds_test.cache()
-ds_test = ds_test.prefetch(tf.data.AUTOTUNE)
+ds_val = ds_val.map(normalize_img, num_parallel_calls=tf.data.AUTOTUNE)
+ds_val = ds_val.cache()
+ds_val = ds_val.prefetch(tf.data.AUTOTUNE)
+
+ds_test = ds_val.map(normalize_img, num_parallel_calls=tf.data.AUTOTUNE)
+ds_test = ds_val.cache()
+ds_test = ds_val.prefetch(tf.data.AUTOTUNE)
 
 model = Sequential()
 
@@ -102,7 +110,7 @@ early_stopping = EarlyStopping(
 history = model.fit(
     ds_train,
     epochs = 25,
-    validation_data = ds_test,
+    validation_data = ds_val,
     callbacks = [early_stopping],
 )
 
@@ -128,3 +136,7 @@ plt.legend()
 
 plt.tight_layout()
 plt.show()
+
+results = model.predict(ds_test)
+print("Testing Prediction")
+print(results)
