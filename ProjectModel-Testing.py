@@ -1,6 +1,7 @@
 import tensorflow as tf
 from tensorflow.keras.models import Sequential # type: ignore
-from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout, GlobalAveragePooling2D, PReLU # type: ignore
+from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout, GlobalAveragePooling2D, PReLU, BatchNormalization # type: ignore
+from tensorflow.keras.callbacks import EarlyStopping # type: ignore
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -50,7 +51,7 @@ ds_test = tf.keras.utils.image_dataset_from_directory(
 def normalize_img(image, label):
   """Normalizes images: `uint8` -> `float32`."""
   return tf.cast(image, tf.float32) / 255., label
-
+ 
 ds_train = ds_train.map(normalize_img, num_parallel_calls=tf.data.AUTOTUNE)
 ds_train = ds_train.cache()
 ds_train = ds_train.shuffle(1000)
@@ -66,21 +67,24 @@ model.add(Conv2D(32, (3, 3), activation = 'relu'))
 model.add(MaxPooling2D(pool_size = (2, 2)))
     
 model.add(Conv2D(64, (3, 3), activation = 'relu'))
+model.add(Dropout(0.1))
 model.add(MaxPooling2D(pool_size = (2, 2)))
 
 model.add(Conv2D(96, (3, 3), activation = 'relu'))
-model.add(Dropout(0.05))
+model.add(Dropout(0.1))
 model.add(MaxPooling2D(pool_size = (2, 2)))
 
 model.add(Conv2D(128, (3, 3), activation = 'relu'))
-model.add(Dropout(0.05))  
+model.add(Dropout(0.1))  
 model.add(MaxPooling2D(pool_size = (2, 2)))
  
 model.add(Flatten())
+
 model.add(Dense(128, activation = 'relu'))
-model.add(Dropout(0.05))  
+model.add(Dropout(0.1))  
 model.add(Dense(64, activation = 'relu')) 
-model.add(Dropout(0.05))  
+model.add(Dropout(0.1))  
+
 model.add(Dense(21, activation = 'softmax'))  
 
 model.compile(
@@ -89,10 +93,17 @@ model.compile(
     metrics = [tf.keras.metrics.SparseCategoricalAccuracy()],
 )
 
+early_stopping = EarlyStopping(
+    monitor = 'val_loss',
+    patience = 3,
+    restore_best_weights = True
+)
+
 history = model.fit(
     ds_train,
     epochs = 25,
     validation_data = ds_test,
+    callbacks = [early_stopping],
 )
 
 model.summary()
