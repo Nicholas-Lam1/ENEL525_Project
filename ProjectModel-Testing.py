@@ -140,5 +140,4 @@ plt.show()
 results = model.predict(ds_test)
 
 print("Testing Prediction")
-for i in range(len(results)):
-    print(f"{i+1}. x: {ds_test[i]}, y: {results[i]}")
+print(results)
